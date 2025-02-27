@@ -8,8 +8,6 @@ import math
 with open("vocabulary.json", "r") as f:
     vocab = json.load(f)
 
-st.sidebar.write(f"✅ Vocabulary loaded with {len(vocab)} tokens")
-
 # Transformer Configuration
 class Config:
     vocab_size = 12006  # Adjust based on vocabulary.json
@@ -73,8 +71,6 @@ def load_model(path):
 cpp_to_pseudo_model = load_model("cpp_to_pseudo_epoch_1.pth")
 pseudo_to_cpp_model = load_model("transformer_epoch_1.pth")
 
-st.sidebar.write("✅ Models loaded successfully!")
-
 # Translation Function
 def translate(model, input_tokens, vocab, device, max_length=50):
     model.eval()
@@ -110,4 +106,4 @@ if st.button("Translate"):
         translated_code = translate(pseudo_to_cpp_model, tokens, vocab, config.device)
     
     st.subheader("Generated Translation:")
-    st.code(translated_code, language="cpp" if mode == "Pseudocode → C++" else "python")
+    st.markdown(f'<pre style="color: blue; font-family: Courier New; font-size: 14px;">{translated_code}</pre>', unsafe_allow_html=True)
