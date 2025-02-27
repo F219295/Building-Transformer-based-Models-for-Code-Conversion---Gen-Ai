@@ -73,7 +73,6 @@ def load_model(path):
 cpp_to_pseudo_model = load_model("cpp_to_pseudo_epoch_1.pth")
 pseudo_to_cpp_model = load_model("transformer_epoch_1.pth")
 
-
 st.sidebar.write("✅ Models loaded successfully!")
 
 # Translation Function
@@ -82,6 +81,7 @@ def translate(model, input_tokens, vocab, device, max_length=50):
     input_ids = [vocab.get(token, vocab["<unk>"]) for token in input_tokens]
     input_tensor = torch.tensor(input_ids, dtype=torch.long).unsqueeze(0).to(device)
     output_ids = [vocab["<start>"]]
+    
     for _ in range(max_length):
         output_tensor = torch.tensor(output_ids, dtype=torch.long).unsqueeze(0).to(device)
         with torch.no_grad():
@@ -90,8 +90,12 @@ def translate(model, input_tokens, vocab, device, max_length=50):
         output_ids.append(next_token_id)
         if next_token_id == vocab["<end>"]:
             break
+    
     id_to_token = {idx: token for token, idx in vocab.items()}
-    return " ".join([id_to_token.get(idx, "<unk>") for idx in output_ids[1:]])
+    translated_tokens = [id_to_token.get(idx, "<unk>") for idx in output_ids[1:]]
+    
+    # Ensure proper line separation
+    return "\n".join(translated_tokens)
 
 # Streamlit UI
 st.title("C++ & Pseudocode Translator")
@@ -104,5 +108,6 @@ if st.button("Translate"):
         translated_code = translate(cpp_to_pseudo_model, tokens, vocab, config.device)
     else:
         translated_code = translate(pseudo_to_cpp_model, tokens, vocab, config.device)
+    
     st.subheader("Generated Translation:")
     st.code(translated_code, language="cpp" if mode == "Pseudocode → C++" else "python")
