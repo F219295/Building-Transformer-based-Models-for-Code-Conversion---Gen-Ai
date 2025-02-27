@@ -106,4 +106,4 @@ if st.button("Translate"):
         translated_code = translate(pseudo_to_cpp_model, tokens, vocab, config.device)
     
     st.subheader("Generated Translation:")
-    st.markdown(f'<pre style="color: blue; font-family: Courier New; font-size: 14px;">{translated_code}</pre>', unsafe_allow_html=True)
+    st.code(translated_code, language="cpp" if mode == "Pseudocode → C++" else "python")
